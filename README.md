@@ -19,8 +19,7 @@ A modern, mobile-friendly, real-time collaborative web app for managing the full
 
 ## Screenshot
 
-<!-- Add a screenshot of your app here -->
-<!-- ![Screenshot](screenshot.png) -->
+![Screenshot](screenshot.png)
 
 ## About
 
