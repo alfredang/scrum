@@ -1,0 +1,1903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#5b6cff" />
+<title>Scrum Agile Transformation Studio</title>
+
+<!-- QRCode.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<!-- Firebase compat CDN (optional; demo mode used when config is placeholder) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<style>
+:root{
+  --bg:#f6f7fb; --bg-elev:#ffffff; --bg-sunk:#eef0f7;
+  --fg:#1b1f2a; --fg-mute:#5a6378; --fg-soft:#8a93a7;
+  --border:#e3e6ef; --border-strong:#c9cfde;
+  --brand:#5b6cff; --brand-2:#8b5bff; --brand-soft:#eef0ff;
+  --accent:#16c79a; --warn:#ffb020; --danger:#ef4f5e; --info:#3aa8ff;
+  --shadow-sm:0 1px 2px rgba(20,25,50,.06),0 1px 1px rgba(20,25,50,.04);
+  --shadow:0 6px 24px rgba(20,25,50,.08),0 2px 6px rgba(20,25,50,.04);
+  --radius:14px; --radius-sm:10px; --radius-lg:20px;
+  --pad:14px;
+  --grid-gap:14px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+[data-theme=dark]{
+  --bg:#0f1320; --bg-elev:#171c2c; --bg-sunk:#0b0f1a;
+  --fg:#e9ecf5; --fg-mute:#aab1c4; --fg-soft:#7a8298;
+  --border:#262c40; --border-strong:#34405f;
+  --brand:#7e8bff; --brand-2:#a880ff; --brand-soft:#1d2240;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 10px 30px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;overscroll-behavior-y:none}
+a{color:var(--brand);text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea,button{font-family:inherit}
+::selection{background:var(--brand);color:#fff}
+
+/* ---------- Generic ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev);color:var(--fg);font-weight:600;font-size:13px;transition:.15s}
+.btn:hover{border-color:var(--border-strong);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));border-color:transparent;color:#fff}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent}
+.btn.danger{background:var(--danger);border-color:transparent;color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+.btn.icon{padding:8px;width:34px;height:34px;justify-content:center}
+.input,.select,.textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev);color:var(--fg);outline:none;transition:.15s}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.textarea{min-height:80px;resize:vertical}
+.label{display:block;margin-bottom:6px;font-weight:600;font-size:12px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.04em}
+.field{margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row.tight{gap:6px}
+.col{display:flex;flex-direction:column;gap:10px}
+.spacer{flex:1}
+.muted{color:var(--fg-mute)}
+.tiny{font-size:11px;color:var(--fg-soft)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:var(--bg-sunk);font-size:11px;font-weight:600;color:var(--fg-mute);border:1px solid var(--border)}
+.chip.b{background:var(--brand-soft);color:var(--brand);border-color:transparent}
+.chip.g{background:#e7faf2;color:#0f8a64;border-color:transparent}
+.chip.r{background:#fde7ea;color:#b8323f;border-color:transparent}
+.chip.y{background:#fff3d6;color:#8a6300;border-color:transparent}
+[data-theme=dark] .chip.g{background:#0f3a2c;color:#7dd6b4}
+[data-theme=dark] .chip.r{background:#3a1620;color:#f29ba6}
+[data-theme=dark] .chip.y{background:#3a2e10;color:#ffd984}
+.card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:var(--pad);box-shadow:var(--shadow-sm)}
+.card.hover:hover{box-shadow:var(--shadow);border-color:var(--border-strong)}
+.h1{font-size:22px;font-weight:800;letter-spacing:-.01em;margin:0}
+.h2{font-size:16px;font-weight:700;margin:0 0 8px}
+.h3{font-size:13px;font-weight:700;margin:0 0 6px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.04em}
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* ---------- Landing ---------- */
+#landing{position:relative;min-height:100dvh;display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;padding:32px 16px 64px;background:
+  radial-gradient(1200px 600px at 90% -10%,rgba(91,108,255,.18),transparent 60%),
+  radial-gradient(800px 500px at -10% 110%,rgba(139,91,255,.18),transparent 60%),
+  var(--bg)}
+.hero{max-width:980px;width:100%;display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+@media (max-width:780px){.hero{grid-template-columns:1fr}}
+.brand-mark{display:inline-flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+.brand-mark .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow)}
+.hero h1{font-size:42px;line-height:1.05;margin:18px 0 10px;letter-spacing:-.02em}
+.hero h1 span{background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:var(--fg-mute);font-size:16px;max-width:48ch}
+.hero-features{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px}
+.hero-card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow)}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:50}
+
+/* ---------- App shell ---------- */
+#app{display:none;min-height:100dvh}
+#app.show{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr}
+@media(max-width:900px){#app.show{grid-template-columns:1fr;grid-template-rows:56px 1fr 60px}}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--bg-elev);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.topbar .ws-id{font-family:var(--mono);font-size:12px;color:var(--fg-mute);background:var(--bg-sunk);padding:4px 8px;border-radius:8px}
+.sidebar{background:var(--bg-elev);border-right:1px solid var(--border);padding:14px 10px;overflow-y:auto}
+@media(max-width:900px){.sidebar{display:none}}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--fg-mute);font-weight:600;font-size:13px;cursor:pointer;user-select:none}
+.nav-item:hover{background:var(--bg-sunk);color:var(--fg)}
+.nav-item.active{background:var(--brand-soft);color:var(--brand)}
+.nav-item .ico{width:18px;height:18px;display:inline-grid;place-items:center}
+.main{padding:18px;overflow:auto}
+.bottom-nav{display:none}
+@media(max-width:900px){
+  .bottom-nav{display:flex;justify-content:space-around;background:var(--bg-elev);border-top:1px solid var(--border);position:sticky;bottom:0;z-index:20}
+  .bottom-nav .nav-item{flex-direction:column;gap:2px;padding:8px 6px;font-size:10px;border-radius:0}
+}
+.module{display:none;animation:fade .18s ease}
+.module.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* presence */
+.avatars{display:flex}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;border:2px solid var(--bg-elev);margin-left:-6px;box-shadow:var(--shadow-sm)}
+.avatar:first-child{margin-left:0}
+.avatar.lg{width:40px;height:40px;font-size:14px}
+
+/* sticky notes */
+.sticky-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.sticky{padding:14px;border-radius:14px;background:#fff7c2;color:#3d2f00;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);min-height:120px;position:relative;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.sticky textarea{width:100%;height:100%;min-height:90px;border:0;background:transparent;resize:none;outline:none;color:inherit;font:inherit}
+.sticky .sticky-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:10px;color:rgba(0,0,0,.5)}
+.sticky .x{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.08);border:0;border-radius:6px;width:22px;height:22px;font-size:14px;line-height:1;color:rgba(0,0,0,.5);display:grid;place-items:center}
+.sticky.c1{background:#ffe1e1;color:#5a1414}
+.sticky.c2{background:#dff7e6;color:#0e4625}
+.sticky.c3{background:#dfe9ff;color:#1b2c70}
+.sticky.c4{background:#f5dbff;color:#43155b}
+
+/* board / kanban */
+.board{display:grid;gap:12px;grid-template-columns:repeat(5,minmax(220px,1fr));overflow-x:auto;padding-bottom:6px}
+.board.cols-4{grid-template-columns:repeat(4,minmax(220px,1fr))}
+.board.cols-6{grid-template-columns:repeat(6,minmax(220px,1fr))}
+.col-lane{background:var(--bg-sunk);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.col-lane h4{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-mute);display:flex;justify-content:space-between;align-items:center}
+.col-lane .count{background:var(--bg-elev);border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:11px;color:var(--fg-mute)}
+.col-lane.drop{outline:2px dashed var(--brand);outline-offset:-6px}
+.task{background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;padding:10px;cursor:grab;box-shadow:var(--shadow-sm);user-select:none}
+.task:active{cursor:grabbing}
+.task .title{font-weight:600;font-size:13px;margin-bottom:4px}
+.task .meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:6px}
+.task.dragging{opacity:.5;transform:rotate(2deg)}
+
+/* table */
+.table{width:100%;border-collapse:separate;border-spacing:0}
+.table th,.table td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.table th{font-size:11px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.05em;background:var(--bg-sunk);position:sticky;top:0}
+.table tr:hover td{background:var(--bg-sunk)}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:var(--bg-elev);border-radius:var(--radius-lg);box-shadow:var(--shadow);max-width:540px;width:100%;max-height:90dvh;overflow:auto;border:1px solid var(--border)}
+.modal.lg{max-width:780px}
+.modal header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal header h2{margin:0;font-size:16px}
+.modal .body{padding:18px 20px}
+.modal footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* toasts */
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:200;pointer-events:none}
+.toast{background:var(--fg);color:var(--bg-elev);padding:10px 14px;border-radius:10px;font-size:13px;box-shadow:var(--shadow);animation:tin .25s ease;max-width:90vw}
+.toast.warn{background:var(--warn);color:#3a2a00}
+.toast.err{background:var(--danger);color:#fff}
+.toast.ok{background:var(--accent);color:#fff}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{opacity:1}}
+
+/* fab */
+.fab{display:none}
+@media(max-width:900px){
+  .fab{display:grid;place-items:center;position:fixed;right:16px;bottom:80px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border:0;font-size:26px;box-shadow:var(--shadow);z-index:30}
+}
+
+/* poker */
+.poker-cards{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:12px 0}
+.poker-card{width:60px;height:88px;border-radius:10px;border:2px solid var(--border);background:var(--bg-elev);font-size:22px;font-weight:800;display:grid;place-items:center;cursor:pointer;transition:.15s}
+.poker-card:hover{transform:translateY(-3px);border-color:var(--brand)}
+.poker-card.sel{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-color:transparent}
+.poker-table{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:14px}
+.poker-vote{padding:10px;border-radius:10px;background:var(--bg-sunk);text-align:center}
+.poker-vote .v{font-size:22px;font-weight:800;color:var(--brand)}
+
+/* charts */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.kpi .v{font-size:24px;font-weight:800;letter-spacing:-.01em}
+.kpi .l{color:var(--fg-mute);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+canvas.chart{width:100%;height:240px;display:block}
+
+/* roadmap */
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:780px){.roadmap{grid-template-columns:1fr 1fr}}
+
+/* retro */
+.retro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:780px){.retro-grid{grid-template-columns:1fr}}
+
+/* transformation */
+.stage{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:12px;background:var(--bg-elev);border:1px solid var(--border);margin-bottom:8px}
+.stage .num{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:800}
+
+/* utility responsive */
+.hide-mobile{display:initial}
+@media(max-width:780px){.hide-mobile{display:none}}
+.show-mobile{display:none}
+@media(max-width:780px){.show-mobile{display:initial}}
+
+/* footer */
+.app-footer{padding:18px 14px;text-align:center;font-size:12px;color:var(--fg-mute);border-top:1px solid var(--border);background:var(--bg-elev)}
+.app-footer a{color:var(--brand);font-weight:600}
+#landing .app-footer{position:absolute;left:0;right:0;bottom:0;background:transparent;border:0}
+.app-footer.in-app{grid-column:1/-1}
+@media(max-width:900px){.app-footer.in-app{padding-bottom:8px;font-size:11px}}
+
+/* print */
+@media print{
+  body{background:#fff}
+  .topbar,.sidebar,.bottom-nav,.fab,.theme-toggle,.btn{display:none!important}
+  .main{padding:0}
+}
+</style>
+</head>
+<body data-theme="light">
+
+<!-- ============ Theme toggle (visible everywhere) ============ -->
+<button class="btn icon theme-toggle" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">🌗</button>
+
+<!-- ============ Landing ============ -->
+<section id="landing">
+  <div class="hero">
+    <div>
+      <div class="brand-mark">
+        <div class="logo">⚡</div>
+        <span style="font-size:14px">Scrum Agile Transformation Studio</span>
+      </div>
+      <h1>Run great sprints.<br/><span>Transform your team.</span></h1>
+      <p class="lead">A collaborative Scrum studio for Product Owners, Scrum Masters, Agile Coaches and Development Teams. Plan sprints, run ceremonies, track velocity, and drive continuous improvement — together, in real time.</p>
+      <div class="hero-features">
+        <span class="chip b">Real-time collaboration</span>
+        <span class="chip">Planning Poker</span>
+        <span class="chip">Burndown</span>
+        <span class="chip">Retrospectives</span>
+        <span class="chip">QR join</span>
+        <span class="chip">Mobile</span>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h2 class="h2">Start a workspace</h2>
+      <div class="field">
+        <label class="label" for="lndName">Your display name</label>
+        <input class="input" id="lndName" placeholder="e.g. Alex (PO)" />
+      </div>
+      <div class="field">
+        <label class="label" for="lndRole">Your role</label>
+        <select class="select" id="lndRole">
+          <option>Product Owner</option>
+          <option>Scrum Master</option>
+          <option>Developer</option>
+          <option>Stakeholder</option>
+          <option>Agile Coach</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnCreate" style="flex:1">Create Workspace</button>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <label class="label" for="lndJoin">Join with Workspace ID</label>
+        <div class="row tight">
+          <input class="input" id="lndJoin" placeholder="e.g. spr-7f2a" style="flex:1" />
+          <button class="btn" id="btnJoin">Join</button>
+        </div>
+      </div>
+      <p class="tiny">Tip: scan a teammate's QR code on mobile to join instantly.</p>
+    </div>
+  </div>
+  <footer class="app-footer">Powered by <a href="https://www.tertiarycourses.com.sg/" target="_blank" rel="noopener noreferrer">Tertiary Infotech Academy Pte Ltd</a></footer>
+</section>
+
+<!-- ============ App shell ============ -->
+<div id="app" role="application">
+
+  <header class="topbar">
+    <div class="brand-mark"><div class="logo" style="width:28px;height:28px;border-radius:8px">⚡</div><span class="hide-mobile" style="font-size:13px">Scrum Studio</span></div>
+    <span class="ws-id" id="wsIdLabel">—</span>
+    <div class="spacer"></div>
+    <input class="input hide-mobile" id="globalSearch" placeholder="Search stories, tasks, retros…" style="max-width:260px" />
+    <div class="avatars" id="presence"></div>
+    <button class="btn sm" id="btnShare" title="Share / QR">🔗 Share</button>
+    <button class="btn sm" id="btnExport" title="Export">⬇ Export</button>
+    <button class="btn icon" id="btnLeave" title="Leave workspace">⎋</button>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <!-- nav items injected -->
+  </aside>
+
+  <main class="main" id="main">
+    <!-- modules injected -->
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav"></nav>
+  <button class="fab" id="fab" title="Add" aria-label="Add">+</button>
+  <footer class="app-footer in-app">Powered by <a href="https://www.tertiarycourses.com.sg/" target="_blank" rel="noopener noreferrer">Tertiary Infotech Academy Pte Ltd</a></footer>
+</div>
+
+<!-- ============ Modals ============ -->
+<div class="modal-bg" id="modalShare">
+  <div class="modal">
+    <header><h2>Invite teammates</h2><div class="spacer"></div><button class="btn icon ghost" data-close>✕</button></header>
+    <div class="body">
+      <div id="qr" style="display:grid;place-items:center;padding:14px;background:#fff;border-radius:12px;width:fit-content;margin:0 auto"></div>
+      <div class="field" style="margin-top:14px">
+        <label class="label">Workspace ID</label>
+        <div class="row tight">
+          <input class="input" id="shareId" readonly style="flex:1;font-family:var(--mono)" />
+          <button class="btn" data-copy="#shareId">Copy</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Invite link</label>
+        <div class="row tight">
+          <input class="input" id="shareUrl" readonly style="flex:1;font-family:var(--mono);font-size:12px" />
+          <button class="btn" data-copy="#shareUrl">Copy</button>
+        </div>
+      </div>
+      <p class="tiny">Open this link or scan the QR on another device. Mobile and desktop work great.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalStory">
+  <div class="modal lg">
+    <header><h2 id="storyTitle">Story</h2><div class="spacer"></div><button class="btn icon ghost" data-close>✕</button></header>
+    <div class="body" id="storyBody"></div>
+    <footer>
+      <button class="btn danger ghost" id="storyDelete" style="margin-right:auto">Delete</button>
+      <button class="btn" data-close>Cancel</button>
+      <button class="btn primary" id="storySave">Save</button>
+    </footer>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalPoker">
+  <div class="modal">
+    <header><h2>Planning Poker</h2><div class="spacer"></div><button class="btn icon ghost" data-close>✕</button></header>
+    <div class="body" id="pokerBody"></div>
+    <footer>
+      <button class="btn" id="pokerReveal">Reveal</button>
+      <button class="btn" id="pokerReset">Reset</button>
+      <button class="btn primary" id="pokerCommit">Commit estimate</button>
+    </footer>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalExport">
+  <div class="modal">
+    <header><h2>Export workspace</h2><div class="spacer"></div><button class="btn icon ghost" data-close>✕</button></header>
+    <div class="body">
+      <p class="muted">Download a snapshot of your Scrum workspace.</p>
+      <div class="row">
+        <button class="btn" id="expJSON">JSON</button>
+        <button class="btn" id="expCSV">CSV (stories+tasks)</button>
+        <button class="btn" id="expReport">Printable HTML report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+/* =========================================================================
+   Scrum Agile Transformation Studio — single-file app
+   Pure HTML/CSS/JS + Firebase (compat) + QRCode.js. Demo mode via localStorage.
+   ========================================================================= */
+'use strict';
+
+/* ---------- Firebase config (replace keys to enable cloud sync) ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyBdXaSTDre8DxtDAROoBAYYBdcpRwWQc8s",
+  authDomain: "scrum-1c959.firebaseapp.com",
+  projectId: "scrum-1c959",
+  storageBucket: "scrum-1c959.firebasestorage.app",
+  messagingSenderId: "839791211407",
+  appId: "1:839791211407:web:ae926b56fd4929dd3f51fa",
+  measurementId: "G-FPKRRJTS66"
+};
+const FIREBASE_ENABLED = !Object.values(firebaseConfig).some(v => String(v).startsWith('YOUR_'));
+
+/* ---------- Tiny helpers ---------- */
+const $  = (sel, ctx=document) => ctx.querySelector(sel);
+const $$ = (sel, ctx=document) => [...ctx.querySelectorAll(sel)];
+const uid = (p='id') => p+'-'+Math.random().toString(36).slice(2,8);
+const now = () => Date.now();
+const fmtDate = t => new Date(t).toLocaleDateString();
+const fmtTime = t => new Date(t).toLocaleString();
+const escape = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const debounce = (fn,ms=200) => { let t; return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}; };
+function toast(msg, kind='') {
+  const el = document.createElement('div');
+  el.className = 'toast '+kind; el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+function colorFor(name){
+  let h = 0; for (let i=0;i<name.length;i++) h = (h*31 + name.charCodeAt(i)) % 360;
+  return `hsl(${h} 65% 55%)`;
+}
+
+/* ---------- App state ---------- */
+const State = {
+  user: null,           // {id,name,role,color}
+  workspaceId: null,
+  data: defaultWorkspace(),
+  ui: { module: 'vision', filters: {}, search: '' }
+};
+
+function defaultWorkspace() {
+  return {
+    name: 'Scrum Workspace',
+    createdAt: now(),
+    vision: { statement:'', goals:'', personas:'', value:'', metrics:'', themes:'', stickies: [] },
+    roadmap: [],          // {id,title,quarter,priority,owner,desc}
+    backlog: [],          // {id,title,desc,acceptance,priority,points,value,sprintId,assignee,status,labels[],deps,links,comments[],votes,author,createdAt}
+    sprints: [],          // {id,name,goal,start,end,capacity,active,reviewNotes,demoChecklist[],status}
+    activeSprintId: null,
+    dailyScrum: [],       // {id,userId,name,date,yesterday,today,blockers,createdAt}
+    impediments: [],      // {id,text,owner,status,createdAt}
+    retrospectives: [],   // {id,sprintId,format,sections{},actions[],anonymous,createdAt}
+    transformation: defaultTransformation(),
+    collaborators: {},    // userId -> {name,role,color,lastSeen}
+    pokerSession: null    // {storyId,votes:{userId:val},revealed:bool}
+  };
+}
+function defaultTransformation(){
+  const stages = ['Agile Assessment','Leadership Alignment','Team Formation','Scrum Adoption','Engineering Practices','DevOps Enablement','Scaling Agile','Continuous Improvement'];
+  return stages.map((name,i)=>({id:'st'+i, name, status:i===0?'In Progress':'Not started', owner:'', initiatives:[], milestones:'', risks:''}));
+}
+
+/* ---------- Persistence layer ---------- */
+const Store = (() => {
+  let mode = 'demo';   // 'demo' | 'firebase'
+  let dbRef = null;
+  let saveTimer = null;
+  let suppressNext = false;
+
+  async function init(workspaceId) {
+    if (FIREBASE_ENABLED) {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        // Anonymous auth (your DB rules can require auth != null)
+        try { await firebase.auth().signInAnonymously(); } catch(e) { console.warn('Anon auth failed', e); }
+        const db = firebase.database();
+        dbRef = db.ref('workspaces/'+workspaceId);
+        const snap = await dbRef.get();
+        if (!snap.exists()) {
+          await dbRef.set(sanitize(State.data));
+        } else {
+          State.data = mergeData(defaultWorkspace(), snap.val());
+        }
+        dbRef.on('value', s => {
+          if (!s.exists()) return;
+          if (suppressNext) { suppressNext = false; return; }
+          State.data = mergeData(defaultWorkspace(), s.val());
+          renderAll();
+        });
+        mode = 'firebase';
+        toast('Connected to Firebase Realtime Database', 'ok');
+        return;
+      } catch (e) {
+        console.warn('Firebase init failed, falling back to demo', e);
+        toast('Firebase init failed — running in local demo mode.', 'warn');
+      }
+    } else {
+      toast('Firebase is not configured. Running in local demo mode.', 'warn');
+    }
+    // Demo mode
+    mode = 'demo';
+    const key = 'scrum:'+workspaceId;
+    const saved = localStorage.getItem(key);
+    if (saved) try { State.data = mergeData(defaultWorkspace(), JSON.parse(saved)); } catch{}
+    else localStorage.setItem(key, JSON.stringify(State.data));
+    window.addEventListener('storage', e => {
+      if (e.key === key && e.newValue) {
+        try { State.data = mergeData(defaultWorkspace(), JSON.parse(e.newValue)); renderAll(); } catch{}
+      }
+    });
+  }
+
+  function mergeData(base, incoming) {
+    const out = {...base, ...incoming};
+    for (const k of Object.keys(base)) {
+      if (Array.isArray(base[k])) out[k] = Array.isArray(incoming[k]) ? incoming[k] : base[k];
+      else if (typeof base[k] === 'object' && base[k] !== null) out[k] = {...base[k], ...(incoming[k]||{})};
+    }
+    return out;
+  }
+
+  // RTDB does not allow `undefined`; convert to null/strip
+  function sanitize(v) {
+    if (v === undefined) return null;
+    if (v === null || typeof v !== 'object') return v;
+    if (Array.isArray(v)) return v.map(sanitize);
+    const out = {};
+    for (const k of Object.keys(v)) {
+      const sv = sanitize(v[k]);
+      if (sv !== undefined) out[k] = sv;
+    }
+    return out;
+  }
+
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      if (mode === 'firebase' && dbRef) {
+        try { suppressNext = true; await dbRef.set(sanitize(State.data)); } catch (e) { console.warn(e); suppressNext=false; }
+      } else {
+        localStorage.setItem('scrum:'+State.workspaceId, JSON.stringify(State.data));
+      }
+    }, 150);
+  }
+
+  function leave(){ if(dbRef) dbRef.off(); dbRef=null; }
+
+  return { init, save, leave, get mode(){return mode;} };
+})();
+
+/* ---------- Persist user / workspace identity ---------- */
+function saveUserLocal(){ localStorage.setItem('scrum:user', JSON.stringify(State.user)); }
+function loadUserLocal(){ try{ return JSON.parse(localStorage.getItem('scrum:user')||'null'); }catch{return null;} }
+
+/* =========================================================================
+   Boot / routing
+   ========================================================================= */
+window.addEventListener('DOMContentLoaded', () => {
+  // Theme
+  const savedTheme = localStorage.getItem('scrum:theme') || 'light';
+  document.body.dataset.theme = savedTheme;
+  $('#themeBtn').addEventListener('click', () => {
+    const next = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.body.dataset.theme = next;
+    localStorage.setItem('scrum:theme', next);
+  });
+
+  // Prefill name
+  const u = loadUserLocal();
+  if (u) $('#lndName').value = u.name;
+
+  $('#btnCreate').addEventListener('click', onCreateWorkspace);
+  $('#btnJoin').addEventListener('click', () => onJoinWorkspace($('#lndJoin').value.trim()));
+
+  // Auto-join from URL
+  const params = new URLSearchParams(location.search);
+  const wsParam = params.get('workspace');
+  if (wsParam) $('#lndJoin').value = wsParam;
+
+  // Modal close handlers
+  document.addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.matches('.modal-bg')) {
+      const m = e.target.closest('.modal-bg') || e.target;
+      m.classList.remove('show');
+    }
+    if (e.target.matches('[data-copy]')) {
+      const sel = e.target.getAttribute('data-copy');
+      const v = $(sel).value;
+      navigator.clipboard?.writeText(v).then(()=>toast('Copied to clipboard','ok'));
+    }
+  });
+
+  // Topbar buttons
+  $('#btnShare').addEventListener('click', openShare);
+  $('#btnExport').addEventListener('click', () => $('#modalExport').classList.add('show'));
+  $('#btnLeave').addEventListener('click', () => location.href = location.pathname);
+
+  $('#expJSON').addEventListener('click', exportJSON);
+  $('#expCSV').addEventListener('click', exportCSV);
+  $('#expReport').addEventListener('click', exportReport);
+
+  $('#globalSearch').addEventListener('input', e => { State.ui.search = e.target.value.toLowerCase(); renderActiveModule(); });
+
+  // Heartbeat presence every 25s
+  setInterval(()=>{ if(State.user && State.workspaceId){ markPresence(); } }, 25000);
+});
+
+function ensureUser() {
+  const name = $('#lndName').value.trim();
+  const role = $('#lndRole').value;
+  if (!name) { toast('Enter your display name first', 'warn'); return null; }
+  const existing = loadUserLocal();
+  const user = existing && existing.name===name ? existing : { id: uid('u'), name, role, color: colorFor(name) };
+  user.role = role;
+  State.user = user; saveUserLocal();
+  return user;
+}
+
+async function onCreateWorkspace() {
+  if (!ensureUser()) return;
+  State.workspaceId = uid('spr');
+  await launchApp(true);
+}
+async function onJoinWorkspace(id) {
+  if (!ensureUser()) return;
+  if (!id) { toast('Enter a workspace ID', 'warn'); return; }
+  State.workspaceId = id;
+  await launchApp(false);
+}
+
+async function launchApp(isCreator) {
+  $('#landing').style.display = 'none';
+  $('#app').classList.add('show');
+  $('#wsIdLabel').textContent = State.workspaceId;
+  await Store.init(State.workspaceId);
+  markPresence();
+  buildNav();
+  renderAll();
+  // Update URL so this tab can be shared
+  const url = new URL(location.href);
+  url.searchParams.set('workspace', State.workspaceId);
+  history.replaceState(null,'',url.toString());
+  if (isCreator) openShare();
+}
+
+function markPresence() {
+  if (!State.user) return;
+  State.data.collaborators = State.data.collaborators || {};
+  State.data.collaborators[State.user.id] = {
+    name: State.user.name, role: State.user.role, color: State.user.color, lastSeen: now()
+  };
+  Store.save();
+  renderPresence();
+}
+
+/* =========================================================================
+   Navigation
+   ========================================================================= */
+const MODULES = [
+  {id:'vision',         icon:'🎯', label:'Product Vision'},
+  {id:'roadmap',        icon:'🗺️', label:'Product Roadmap'},
+  {id:'backlog',        icon:'📋', label:'Product Backlog'},
+  {id:'planning',       icon:'🃏', label:'Sprint Planning'},
+  {id:'sprintBoard',    icon:'🧱', label:'Sprint Backlog'},
+  {id:'daily',          icon:'☕', label:'Daily Scrum'},
+  {id:'execution',      icon:'📈', label:'Sprint Execution'},
+  {id:'review',         icon:'🎬', label:'Sprint Review'},
+  {id:'retro',          icon:'🔁', label:'Retrospective'},
+  {id:'metrics',        icon:'📊', label:'Agile Metrics'},
+  {id:'transformation', icon:'🚀', label:'Transformation'},
+];
+
+function buildNav() {
+  const sb = $('#sidebar'); sb.innerHTML = '';
+  const bn = $('#bottomNav'); bn.innerHTML = '';
+  MODULES.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'nav-item'+(State.ui.module===m.id?' active':'');
+    item.dataset.mod = m.id;
+    item.innerHTML = `<span class="ico">${m.icon}</span><span>${m.label}</span>`;
+    item.addEventListener('click', () => switchModule(m.id));
+    sb.appendChild(item);
+    if (['vision','backlog','sprintBoard','daily','metrics'].includes(m.id)) {
+      const bi = item.cloneNode(true);
+      bi.addEventListener('click', () => switchModule(m.id));
+      bn.appendChild(bi);
+    }
+  });
+  $('#fab').addEventListener('click', onFab);
+}
+function switchModule(id) {
+  State.ui.module = id;
+  $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.mod === id));
+  renderActiveModule();
+}
+function onFab() {
+  switch (State.ui.module) {
+    case 'vision': addSticky(); break;
+    case 'roadmap': addRoadmapItem(); break;
+    case 'backlog': openStoryEditor(null); break;
+    case 'sprintBoard': openStoryEditor(null,{forSprint:true}); break;
+    case 'daily': addDailyEntry(); break;
+    case 'retro': addRetroNote(); break;
+    default: toast('Use the buttons in this view to add items.');
+  }
+}
+
+/* =========================================================================
+   Render dispatcher
+   ========================================================================= */
+function renderAll() {
+  $('#wsIdLabel').textContent = State.workspaceId;
+  renderPresence();
+  renderActiveModule();
+}
+function renderActiveModule() {
+  const main = $('#main');
+  const m = State.ui.module;
+  main.innerHTML = `<div class="module active" id="mod-${m}"></div>`;
+  const host = $('#mod-'+m);
+  switch (m) {
+    case 'vision':         renderVision(host); break;
+    case 'roadmap':        renderRoadmap(host); break;
+    case 'backlog':        renderBacklog(host); break;
+    case 'planning':       renderPlanning(host); break;
+    case 'sprintBoard':    renderSprintBoard(host); break;
+    case 'daily':          renderDaily(host); break;
+    case 'execution':      renderExecution(host); break;
+    case 'review':         renderReview(host); break;
+    case 'retro':          renderRetro(host); break;
+    case 'metrics':        renderMetrics(host); break;
+    case 'transformation': renderTransformation(host); break;
+  }
+}
+
+function renderPresence() {
+  const el = $('#presence'); if (!el) return;
+  const online = Object.values(State.data.collaborators || {})
+    .filter(c => now() - (c.lastSeen||0) < 90000)
+    .slice(0, 6);
+  el.innerHTML = online.map(c =>
+    `<div class="avatar" title="${escape(c.name)} · ${escape(c.role)}" style="background:${c.color||'var(--brand)'}">${escape((c.name||'?')[0].toUpperCase())}</div>`
+  ).join('');
+}
+
+/* =========================================================================
+   1. Product Vision
+   ========================================================================= */
+function renderVision(host) {
+  const v = State.data.vision;
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:14px">
+      <h1 class="h1">🎯 Product Vision</h1>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnAddSticky">+ Sticky note</button>
+    </div>
+    <div class="card">
+      <div class="row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${visionField('statement','Vision statement','One sentence describing the product purpose')}
+        ${visionField('value','Value proposition','What unique value do we deliver?')}
+        ${visionField('goals','Business goals','Top business objectives for the product')}
+        ${visionField('personas','Customer personas','Primary user personas')}
+        ${visionField('metrics','Success metrics','How we will measure success (KPIs)')}
+        ${visionField('themes','Strategic themes','Themes guiding our roadmap')}
+      </div>
+    </div>
+    <h2 class="h2" style="margin-top:18px">Collaborative sticky notes</h2>
+    <div class="sticky-grid" id="stickyGrid"></div>
+  `;
+  $('#btnAddSticky').onclick = addSticky;
+  host.addEventListener('input', e => {
+    if (e.target.dataset.vfield) {
+      State.data.vision[e.target.dataset.vfield] = e.target.value;
+      Store.save();
+    }
+  });
+  renderStickies();
+}
+function visionField(k,label,ph){
+  const v = State.data.vision[k] || '';
+  return `<div class="field"><label class="label">${label}</label><textarea class="textarea" data-vfield="${k}" placeholder="${ph}">${escape(v)}</textarea></div>`;
+}
+function addSticky(){
+  State.data.vision.stickies.push({id:uid('s'), text:'', color:Math.floor(Math.random()*4)+1, author:State.user.name, createdAt:now()});
+  Store.save(); renderStickies();
+}
+function renderStickies(){
+  const grid = $('#stickyGrid'); if (!grid) return;
+  grid.innerHTML = State.data.vision.stickies.map(s => `
+    <div class="sticky c${s.color||1}" data-id="${s.id}">
+      <button class="x" data-del="${s.id}" aria-label="Delete">×</button>
+      <textarea>${escape(s.text)}</textarea>
+      <div class="sticky-foot"><span>${escape(s.author||'')}</span><span>${fmtDate(s.createdAt)}</span></div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.sticky textarea').forEach(t => t.addEventListener('input', e => {
+    const id = e.target.closest('.sticky').dataset.id;
+    const s = State.data.vision.stickies.find(x => x.id === id);
+    if (s) { s.text = e.target.value; Store.save(); }
+  }));
+  grid.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    State.data.vision.stickies = State.data.vision.stickies.filter(x => x.id !== b.dataset.del);
+    Store.save(); renderStickies();
+  }));
+}
+
+/* =========================================================================
+   2. Roadmap
+   ========================================================================= */
+function renderRoadmap(host) {
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:14px">
+      <h1 class="h1">🗺️ Product Roadmap</h1>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnRoadAdd">+ Add item</button>
+    </div>
+    <div class="roadmap" id="roadmapGrid">
+      ${['Q1','Q2','Q3','Q4'].map(q=>`
+        <div class="col-lane" data-q="${q}">
+          <h4>${q} <span class="count" data-count="${q}">0</span></h4>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  $('#btnRoadAdd').onclick = addRoadmapItem;
+  drawRoadmap();
+  enableLaneDrop('#roadmapGrid', 'q', (id,q)=>{ const it = State.data.roadmap.find(x=>x.id===id); if(it){it.quarter=q; Store.save(); drawRoadmap();}});
+}
+function drawRoadmap(){
+  ['Q1','Q2','Q3','Q4'].forEach(q=>{
+    const lane = document.querySelector(`[data-q="${q}"]`);
+    if (!lane) return;
+    const items = State.data.roadmap.filter(r=>r.quarter===q);
+    document.querySelector(`[data-count="${q}"]`).textContent = items.length;
+    lane.querySelectorAll('.task').forEach(n=>n.remove());
+    items.forEach(it => {
+      const t = document.createElement('div');
+      t.className = 'task'; t.draggable = true; t.dataset.id = it.id;
+      t.innerHTML = `<div class="title">${escape(it.title||'Untitled')}</div>
+        <div class="muted tiny">${escape(it.desc||'')}</div>
+        <div class="meta"><span class="chip ${prioClass(it.priority)}">${escape(it.priority||'Medium')}</span>${it.owner?`<span class="chip">${escape(it.owner)}</span>`:''}</div>`;
+      t.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', it.id); t.classList.add('dragging'); });
+      t.addEventListener('dragend', () => t.classList.remove('dragging'));
+      t.addEventListener('click', () => editRoadmapItem(it.id));
+      lane.appendChild(t);
+    });
+  });
+}
+function addRoadmapItem(){
+  const title = prompt('Roadmap item title?'); if (!title) return;
+  State.data.roadmap.push({id:uid('rm'), title, desc:'', quarter:'Q1', priority:'Medium', owner:State.user.name});
+  Store.save(); drawRoadmap();
+}
+function editRoadmapItem(id){
+  const it = State.data.roadmap.find(x=>x.id===id); if(!it) return;
+  const t = prompt('Title', it.title); if (t===null) return;
+  const d = prompt('Description', it.desc||'') ?? it.desc;
+  const p = prompt('Priority (Critical/High/Medium/Low)', it.priority||'Medium') ?? it.priority;
+  const o = prompt('Owner', it.owner||'') ?? it.owner;
+  if (t==='') { State.data.roadmap = State.data.roadmap.filter(x=>x.id!==id); }
+  else { it.title=t; it.desc=d; it.priority=p; it.owner=o; }
+  Store.save(); drawRoadmap();
+}
+function prioClass(p){ return ({Critical:'r',High:'y',Medium:'b',Low:''})[p]||''; }
+function enableLaneDrop(rootSel, attr, onMove){
+  document.querySelectorAll(`${rootSel} .col-lane`).forEach(lane => {
+    lane.addEventListener('dragover', e => { e.preventDefault(); lane.classList.add('drop'); });
+    lane.addEventListener('dragleave', () => lane.classList.remove('drop'));
+    lane.addEventListener('drop', e => {
+      e.preventDefault(); lane.classList.remove('drop');
+      const id = e.dataTransfer.getData('text/plain');
+      onMove(id, lane.dataset[attr]);
+    });
+  });
+}
+
+/* =========================================================================
+   3. Backlog
+   ========================================================================= */
+const STATUSES = ['Backlog','Ready','In Progress','Blocked','Review','Done'];
+const PRIORITIES = ['Critical','High','Medium','Low'];
+
+function renderBacklog(host) {
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:10px">
+      <h1 class="h1">📋 Product Backlog</h1>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnNewStory">+ New story</button>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="row tight">
+        <select class="select" id="fStatus" style="max-width:150px"><option value="">All statuses</option>${STATUSES.map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="select" id="fPrio" style="max-width:150px"><option value="">All priorities</option>${PRIORITIES.map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="select" id="fSprint" style="max-width:180px"><option value="">All sprints</option>${State.data.sprints.map(s=>`<option value="${s.id}">${escape(s.name)}</option>`).join('')}</select>
+        <input class="input" id="fAssignee" placeholder="Assignee filter…" style="max-width:180px"/>
+      </div>
+    </div>
+    <div class="card" style="overflow:auto;padding:0">
+      <table class="table" id="backTable">
+        <thead><tr>
+          <th>#</th><th>Title</th><th>Priority</th><th>Pts</th><th>Status</th><th>Sprint</th><th>Assignee</th><th>Votes</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  `;
+  $('#btnNewStory').onclick = () => openStoryEditor(null);
+  ['fStatus','fPrio','fSprint','fAssignee'].forEach(id => $('#'+id).addEventListener('input', drawBacklog));
+  drawBacklog();
+}
+function drawBacklog(){
+  const fs = $('#fStatus')?.value, fp = $('#fPrio')?.value, fsp=$('#fSprint')?.value, fa=$('#fAssignee')?.value.toLowerCase()||'';
+  const q = State.ui.search;
+  const tbody = $('#backTable tbody'); tbody.innerHTML = '';
+  State.data.backlog.forEach((s,i) => {
+    if (fs && s.status!==fs) return;
+    if (fp && s.priority!==fp) return;
+    if (fsp && s.sprintId!==fsp) return;
+    if (fa && !(s.assignee||'').toLowerCase().includes(fa)) return;
+    if (q && !((s.title+' '+s.desc).toLowerCase().includes(q))) return;
+    const sprintName = State.data.sprints.find(x=>x.id===s.sprintId)?.name || '—';
+    const tr = document.createElement('tr');
+    tr.style.cursor='pointer';
+    tr.innerHTML = `<td class="muted tiny">${i+1}</td>
+      <td><b>${escape(s.title||'Untitled')}</b><div class="muted tiny">${escape((s.desc||'').slice(0,80))}</div></td>
+      <td><span class="chip ${prioClass(s.priority)}">${escape(s.priority||'Medium')}</span></td>
+      <td>${s.points||'-'}</td>
+      <td><span class="chip ${statusClass(s.status)}">${escape(s.status||'Backlog')}</span></td>
+      <td>${escape(sprintName)}</td>
+      <td>${escape(s.assignee||'—')}</td>
+      <td>👍 ${s.votes||0}</td>`;
+    tr.onclick = () => openStoryEditor(s.id);
+    tbody.appendChild(tr);
+  });
+  if (!tbody.children.length) tbody.innerHTML = `<tr><td colspan="8" class="muted" style="padding:24px;text-align:center">No stories. Click "+ New story" to create one.</td></tr>`;
+}
+function statusClass(s){ return ({Done:'g',Blocked:'r','In Progress':'b',Review:'y'})[s]||''; }
+
+/* Story editor */
+let editingStory = null;
+function openStoryEditor(id, opts={}) {
+  const isNew = !id;
+  let s = isNew ? newStory(opts) : State.data.backlog.find(x=>x.id===id);
+  if (!s) return;
+  editingStory = s;
+  $('#storyTitle').textContent = isNew ? 'New story' : 'Edit story';
+  $('#storyDelete').style.display = isNew ? 'none' : '';
+  const sprints = State.data.sprints;
+  $('#storyBody').innerHTML = `
+    <div class="field"><label class="label">Title</label><input class="input" id="sf-title" value="${escape(s.title||'')}" /></div>
+    <div class="field"><label class="label">Description</label><textarea class="textarea" id="sf-desc">${escape(s.desc||'')}</textarea></div>
+    <div class="field"><label class="label">Acceptance criteria</label><textarea class="textarea" id="sf-ac">${escape(s.acceptance||'')}</textarea></div>
+    <div class="row">
+      <div class="field" style="flex:1;min-width:140px"><label class="label">Priority</label>
+        <select class="select" id="sf-prio">${PRIORITIES.map(p=>`<option ${p===s.priority?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="field" style="flex:1;min-width:100px"><label class="label">Story points</label>
+        <select class="select" id="sf-pts"><option value="">—</option>${[1,2,3,5,8,13,21].map(p=>`<option ${String(p)===String(s.points)?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="field" style="flex:1;min-width:120px"><label class="label">Business value</label>
+        <input class="input" type="number" id="sf-val" value="${s.value||''}" /></div>
+    </div>
+    <div class="row">
+      <div class="field" style="flex:1;min-width:140px"><label class="label">Status</label>
+        <select class="select" id="sf-status">${STATUSES.map(p=>`<option ${p===s.status?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="field" style="flex:1;min-width:140px"><label class="label">Sprint</label>
+        <select class="select" id="sf-sprint"><option value="">— Backlog —</option>${sprints.map(sp=>`<option value="${sp.id}" ${sp.id===s.sprintId?'selected':''}>${escape(sp.name)}</option>`).join('')}</select></div>
+      <div class="field" style="flex:1;min-width:140px"><label class="label">Assignee</label>
+        <input class="input" id="sf-assignee" value="${escape(s.assignee||'')}" /></div>
+    </div>
+    <div class="field"><label class="label">Labels (comma separated)</label>
+      <input class="input" id="sf-labels" value="${escape((s.labels||[]).join(', '))}" /></div>
+    <div class="field"><label class="label">Links / attachments (one URL per line)</label>
+      <textarea class="textarea" id="sf-links">${escape((s.links||[]).join('\n'))}</textarea></div>
+    <div class="row">
+      <button class="btn" id="sf-vote">👍 Vote (${s.votes||0})</button>
+      <button class="btn" id="sf-poker">🃏 Planning Poker</button>
+    </div>
+    <div class="divider"></div>
+    <h3 class="h3">Comments</h3>
+    <div id="sf-comments">
+      ${(s.comments||[]).map(c=>`<div class="card" style="margin-bottom:6px"><div class="tiny muted">${escape(c.author)} · ${fmtTime(c.at)}</div>${escape(c.text)}</div>`).join('') || '<p class="muted tiny">No comments yet.</p>'}
+    </div>
+    <div class="row tight" style="margin-top:8px">
+      <input class="input" id="sf-comment" placeholder="Write a comment…" style="flex:1"/>
+      <button class="btn" id="sf-addcomment">Post</button>
+    </div>
+    <p class="tiny muted" style="margin-top:10px">Author: ${escape(s.author||'-')} · Created: ${fmtTime(s.createdAt)}</p>
+  `;
+  $('#sf-vote').onclick = () => { s.votes = (s.votes||0)+1; Store.save(); openStoryEditor(s.id); };
+  $('#sf-poker').onclick = () => { saveStoryFromForm(); openPoker(s.id); };
+  $('#sf-addcomment').onclick = () => {
+    const t = $('#sf-comment').value.trim(); if (!t) return;
+    s.comments = s.comments || [];
+    s.comments.push({author:State.user.name, text:t, at:now()});
+    Store.save(); openStoryEditor(s.id);
+  };
+  $('#storySave').onclick = () => { saveStoryFromForm(); $('#modalStory').classList.remove('show'); drawBacklog(); renderActiveModule(); };
+  $('#storyDelete').onclick = () => {
+    if (!confirm('Delete this story?')) return;
+    State.data.backlog = State.data.backlog.filter(x=>x.id!==s.id);
+    Store.save(); $('#modalStory').classList.remove('show'); renderActiveModule();
+  };
+  $('#modalStory').classList.add('show');
+}
+function newStory(opts){
+  const s = {
+    id: uid('st'), title:'', desc:'', acceptance:'', priority:'Medium', points:'', value:'',
+    sprintId: opts.forSprint ? State.data.activeSprintId : '', assignee:'', status:'Backlog',
+    labels:[], links:[], comments:[], votes:0, author:State.user.name, createdAt: now()
+  };
+  State.data.backlog.unshift(s);
+  return s;
+}
+function saveStoryFromForm(){
+  const s = editingStory; if (!s) return;
+  s.title = $('#sf-title').value.trim();
+  s.desc = $('#sf-desc').value;
+  s.acceptance = $('#sf-ac').value;
+  s.priority = $('#sf-prio').value;
+  s.points = $('#sf-pts').value;
+  s.value = $('#sf-val').value;
+  s.status = $('#sf-status').value;
+  s.sprintId = $('#sf-sprint').value;
+  s.assignee = $('#sf-assignee').value;
+  s.labels = $('#sf-labels').value.split(',').map(x=>x.trim()).filter(Boolean);
+  s.links = $('#sf-links').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  Store.save();
+}
+
+/* =========================================================================
+   4. Sprint Planning + Planning Poker
+   ========================================================================= */
+function renderPlanning(host) {
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:10px">
+      <h1 class="h1">🃏 Sprint Planning</h1>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnNewSprint">+ New sprint</button>
+    </div>
+    <div id="planSprints"></div>
+  `;
+  $('#btnNewSprint').onclick = newSprint;
+  drawPlanning();
+}
+function drawPlanning(){
+  const host = $('#planSprints'); host.innerHTML = '';
+  if (!State.data.sprints.length) {
+    host.innerHTML = `<div class="card muted">No sprints yet. Click "+ New sprint" to plan your first sprint.</div>`;
+    return;
+  }
+  State.data.sprints.forEach(sp => {
+    const stories = State.data.backlog.filter(s => s.sprintId === sp.id);
+    const committed = stories.reduce((a,s)=>a+(parseInt(s.points)||0),0);
+    const card = document.createElement('div');
+    card.className = 'card'; card.style.marginBottom = '12px';
+    const isActive = State.data.activeSprintId === sp.id;
+    card.innerHTML = `
+      <div class="row" style="align-items:center;flex-wrap:wrap;gap:10px">
+        <h2 class="h2" style="margin:0">${escape(sp.name)} ${isActive?'<span class="chip g">ACTIVE</span>':''}</h2>
+        <div class="spacer"></div>
+        <button class="btn sm" data-act="${sp.id}">${isActive?'Stop':'Activate'}</button>
+        <button class="btn sm" data-edit="${sp.id}">Edit</button>
+        <button class="btn sm danger ghost" data-del="${sp.id}">Delete</button>
+      </div>
+      <p class="muted" style="margin:6px 0">${escape(sp.goal||'No goal yet.')}</p>
+      <div class="row tight">
+        <span class="chip">📅 ${sp.start?fmtDate(sp.start):'?'} → ${sp.end?fmtDate(sp.end):'?'}</span>
+        <span class="chip">⚙ Capacity: ${sp.capacity||'—'} pts</span>
+        <span class="chip b">Committed: ${committed} pts</span>
+        <span class="chip">${stories.length} stories</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row" style="gap:14px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <h3 class="h3">In sprint</h3>
+          <div class="col-lane" data-sp="${sp.id}" id="lane-${sp.id}" style="min-height:120px"></div>
+        </div>
+        <div style="flex:1;min-width:280px">
+          <h3 class="h3">Available backlog</h3>
+          <div class="col-lane" data-sp="" id="lane-bk-${sp.id}" style="min-height:120px"></div>
+        </div>
+      </div>
+    `;
+    host.appendChild(card);
+
+    fillLane(`#lane-${sp.id}`, stories, sp.id);
+    fillLane(`#lane-bk-${sp.id}`, State.data.backlog.filter(s=>!s.sprintId), '', sp.id);
+
+    card.querySelector(`[data-act="${sp.id}"]`).onclick = () => { State.data.activeSprintId = isActive ? null : sp.id; Store.save(); drawPlanning(); };
+    card.querySelector(`[data-edit="${sp.id}"]`).onclick = () => editSprint(sp.id);
+    card.querySelector(`[data-del="${sp.id}"]`).onclick = () => {
+      if (!confirm('Delete sprint? Stories return to backlog.')) return;
+      State.data.backlog.forEach(s => { if (s.sprintId===sp.id) s.sprintId=''; });
+      State.data.sprints = State.data.sprints.filter(x=>x.id!==sp.id);
+      if (State.data.activeSprintId===sp.id) State.data.activeSprintId=null;
+      Store.save(); drawPlanning();
+    };
+  });
+}
+function fillLane(sel, stories, sprintId, planSpId){
+  const lane = document.querySelector(sel); if (!lane) return;
+  lane.innerHTML = '';
+  if (!stories.length) lane.innerHTML = `<div class="muted tiny" style="padding:8px">Drop stories here</div>`;
+  stories.forEach(s => {
+    const t = document.createElement('div');
+    t.className = 'task'; t.draggable = true; t.dataset.id = s.id;
+    t.innerHTML = `<div class="title">${escape(s.title||'Untitled')}</div>
+      <div class="meta"><span class="chip ${prioClass(s.priority)}">${escape(s.priority||'Medium')}</span><span class="chip">${s.points||'?'} pts</span></div>`;
+    t.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', s.id); t.classList.add('dragging'); });
+    t.addEventListener('dragend', () => t.classList.remove('dragging'));
+    t.addEventListener('click', () => openStoryEditor(s.id));
+    lane.appendChild(t);
+  });
+  lane.addEventListener('dragover', e => { e.preventDefault(); lane.classList.add('drop'); });
+  lane.addEventListener('dragleave', () => lane.classList.remove('drop'));
+  lane.addEventListener('drop', e => {
+    e.preventDefault(); lane.classList.remove('drop');
+    const id = e.dataTransfer.getData('text/plain');
+    const story = State.data.backlog.find(x=>x.id===id); if(!story) return;
+    story.sprintId = lane.dataset.sp || '';
+    Store.save(); drawPlanning();
+  });
+}
+function newSprint(){
+  const name = prompt('Sprint name', 'Sprint '+(State.data.sprints.length+1)); if(!name) return;
+  const sp = {id:uid('sp'), name, goal:'', start:now(), end: now()+14*86400000, capacity:30, status:'Planned', reviewNotes:'', demoChecklist:[]};
+  State.data.sprints.push(sp);
+  Store.save(); drawPlanning();
+}
+function editSprint(id){
+  const sp = State.data.sprints.find(x=>x.id===id); if(!sp) return;
+  const n = prompt('Sprint name', sp.name) ?? sp.name;
+  const g = prompt('Sprint goal', sp.goal||'') ?? sp.goal;
+  const s = prompt('Start (YYYY-MM-DD)', new Date(sp.start||now()).toISOString().slice(0,10)) ?? '';
+  const e = prompt('End (YYYY-MM-DD)', new Date(sp.end||now()).toISOString().slice(0,10)) ?? '';
+  const c = parseInt(prompt('Capacity (story points)', sp.capacity||30));
+  sp.name=n; sp.goal=g;
+  if (s) sp.start = new Date(s).getTime();
+  if (e) sp.end = new Date(e).getTime();
+  if (!isNaN(c)) sp.capacity=c;
+  Store.save(); drawPlanning();
+}
+
+/* Planning Poker */
+function openPoker(storyId) {
+  State.data.pokerSession = State.data.pokerSession || {};
+  State.data.pokerSession = {storyId, votes:{}, revealed:false};
+  Store.save();
+  renderPokerModal();
+  $('#modalPoker').classList.add('show');
+}
+function renderPokerModal(){
+  const ses = State.data.pokerSession; if (!ses) return;
+  const story = State.data.backlog.find(x=>x.id===ses.storyId);
+  const cards=[1,2,3,5,8,13,21];
+  const myVote = ses.votes[State.user.id];
+  $('#pokerBody').innerHTML = `
+    <h3 class="h2">${escape(story?.title||'Story')}</h3>
+    <p class="muted">${escape(story?.desc||'')}</p>
+    <div class="poker-cards">
+      ${cards.map(c=>`<div class="poker-card ${myVote===c?'sel':''}" data-pv="${c}">${c}</div>`).join('')}
+    </div>
+    <div class="poker-table">
+      ${Object.entries(State.data.collaborators||{}).map(([uid,c])=>{
+        const v = ses.votes[uid];
+        const show = ses.revealed ? (v??'—') : (v?'✓':'…');
+        return `<div class="poker-vote"><div class="muted tiny">${escape(c.name)}</div><div class="v">${show}</div></div>`;
+      }).join('') || '<p class="muted tiny">No collaborators yet.</p>'}
+    </div>
+  `;
+  $('#pokerBody').querySelectorAll('[data-pv]').forEach(b => b.onclick = () => {
+    State.data.pokerSession.votes[State.user.id] = parseInt(b.dataset.pv);
+    Store.save(); renderPokerModal();
+  });
+}
+document.addEventListener('click', e => {
+  if (e.target.id==='pokerReveal') { State.data.pokerSession.revealed=true; Store.save(); renderPokerModal(); }
+  if (e.target.id==='pokerReset')  { State.data.pokerSession.votes={}; State.data.pokerSession.revealed=false; Store.save(); renderPokerModal(); }
+  if (e.target.id==='pokerCommit') {
+    const votes = Object.values(State.data.pokerSession.votes||{}).filter(v=>typeof v==='number');
+    if (!votes.length) { toast('No votes to commit', 'warn'); return; }
+    const avg = votes.reduce((a,b)=>a+b,0)/votes.length;
+    const fib = [1,2,3,5,8,13,21];
+    const nearest = fib.reduce((p,c)=>Math.abs(c-avg)<Math.abs(p-avg)?c:p);
+    const story = State.data.backlog.find(x=>x.id===State.data.pokerSession.storyId);
+    if (story) { story.points = nearest; }
+    State.data.pokerSession = null;
+    Store.save();
+    $('#modalPoker').classList.remove('show');
+    toast('Committed '+nearest+' points','ok');
+    renderActiveModule();
+  }
+});
+
+/* =========================================================================
+   5. Sprint Backlog Kanban
+   ========================================================================= */
+const KANBAN_COLS = ['To Do','In Progress','In Review','Testing','Done'];
+const KANBAN_TO_STATUS = {'To Do':'Ready','In Progress':'In Progress','In Review':'Review','Testing':'Review','Done':'Done'};
+
+function renderSprintBoard(host) {
+  const sp = State.data.sprints.find(x=>x.id===State.data.activeSprintId);
+  if (!sp) {
+    host.innerHTML = `<h1 class="h1">🧱 Sprint Backlog</h1>
+      <div class="card muted">No active sprint. Activate one in <a href="#" id="goPlan">Sprint Planning</a>.</div>`;
+    $('#goPlan').onclick = e => { e.preventDefault(); switchModule('planning'); };
+    return;
+  }
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+      <h1 class="h1">🧱 ${escape(sp.name)}</h1>
+      <span class="chip b">${escape(sp.goal||'No goal')}</span>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnAddTask">+ Add story</button>
+    </div>
+    <div class="board" id="kb">
+      ${KANBAN_COLS.map(col => `
+        <div class="col-lane" data-col="${col}">
+          <h4>${col} <span class="count" data-c="${col}">0</span></h4>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  $('#btnAddTask').onclick = () => openStoryEditor(null,{forSprint:true});
+  drawKanban();
+  enableTouchDrag();
+}
+function drawKanban(){
+  const sp = State.data.sprints.find(x=>x.id===State.data.activeSprintId); if(!sp) return;
+  const stories = State.data.backlog.filter(s=>s.sprintId===sp.id);
+  KANBAN_COLS.forEach(col => {
+    const lane = document.querySelector(`[data-col="${col}"]`); if(!lane) return;
+    lane.querySelectorAll('.task').forEach(n=>n.remove());
+    const matched = stories.filter(s => mapStatusToCol(s.status)===col);
+    document.querySelector(`[data-c="${col}"]`).textContent = matched.length;
+    matched.forEach(s => {
+      const t = document.createElement('div');
+      t.className='task'; t.draggable=true; t.dataset.id=s.id;
+      t.innerHTML = `<div class="title">${escape(s.title||'Untitled')}</div>
+        <div class="muted tiny">${escape((s.desc||'').slice(0,80))}</div>
+        <div class="meta">
+          <span class="chip ${prioClass(s.priority)}">${escape(s.priority||'Medium')}</span>
+          <span class="chip">${s.points||'?'} pts</span>
+          ${s.assignee?`<span class="chip">${escape(s.assignee)}</span>`:''}
+        </div>`;
+      t.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', s.id); t.classList.add('dragging'); });
+      t.addEventListener('dragend', () => t.classList.remove('dragging'));
+      t.addEventListener('click', () => openStoryEditor(s.id));
+      lane.appendChild(t);
+    });
+    lane.addEventListener('dragover', e => { e.preventDefault(); lane.classList.add('drop'); });
+    lane.addEventListener('dragleave', () => lane.classList.remove('drop'));
+    lane.addEventListener('drop', e => {
+      e.preventDefault(); lane.classList.remove('drop');
+      const id = e.dataTransfer.getData('text/plain');
+      const s = State.data.backlog.find(x=>x.id===id); if(!s) return;
+      s.status = KANBAN_TO_STATUS[lane.dataset.col];
+      Store.save(); drawKanban();
+    });
+  });
+}
+function mapStatusToCol(status){
+  if (status==='Done') return 'Done';
+  if (status==='Review') return 'In Review';
+  if (status==='In Progress') return 'In Progress';
+  if (status==='Backlog' || status==='Ready' || !status) return 'To Do';
+  return 'To Do';
+}
+
+/* Touch drag fallback */
+function enableTouchDrag() {
+  let dragEl = null, ghost=null, startX=0,startY=0;
+  document.querySelectorAll('.board .task').forEach(el => {
+    el.addEventListener('touchstart', e => {
+      const tk = e.touches[0]; dragEl = el; startX = tk.clientX; startY = tk.clientY;
+      ghost = el.cloneNode(true); ghost.style.position='fixed'; ghost.style.zIndex=999;
+      ghost.style.opacity='.85'; ghost.style.pointerEvents='none';
+      ghost.style.width = el.offsetWidth+'px';
+      document.body.appendChild(ghost);
+      el.classList.add('dragging');
+    }, {passive:true});
+    el.addEventListener('touchmove', e => {
+      if (!ghost) return;
+      const tk = e.touches[0];
+      ghost.style.left = (tk.clientX - 60)+'px';
+      ghost.style.top = (tk.clientY - 30)+'px';
+    }, {passive:true});
+    el.addEventListener('touchend', e => {
+      if (!ghost) return;
+      const tk = e.changedTouches[0];
+      const target = document.elementFromPoint(tk.clientX, tk.clientY);
+      const lane = target?.closest('.col-lane');
+      if (lane && dragEl) {
+        const id = dragEl.dataset.id;
+        const story = State.data.backlog.find(x=>x.id===id);
+        if (story) {
+          if (lane.dataset.col) story.status = KANBAN_TO_STATUS[lane.dataset.col];
+          else if (lane.dataset.q) { const it = State.data.roadmap.find(x=>x.id===id); if(it) it.quarter=lane.dataset.q; }
+          else if (lane.dataset.sp !== undefined) story.sprintId = lane.dataset.sp;
+          Store.save(); renderActiveModule();
+        }
+      }
+      ghost.remove(); ghost=null; dragEl?.classList.remove('dragging'); dragEl=null;
+    });
+  });
+}
+
+/* =========================================================================
+   6. Daily Scrum
+   ========================================================================= */
+function renderDaily(host) {
+  host.innerHTML = `
+    <div class="row" style="align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+      <h1 class="h1">☕ Daily Scrum</h1>
+      <span class="chip b" id="dailyTimer">15:00</span>
+      <button class="btn sm" id="btnTimer">Start timer</button>
+      <div class="spacer"></div>
+      <button class="btn primary" id="btnDaily">+ My update</button>
+    </div>
+    <div class="row" style="align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="flex:2;min-width:300px">
+        <h3 class="h3">Today's standup</h3>
+        <div id="dailyList"></div>
+      </div>
+      <div style="flex:1;min-width:260px">
+        <h3 class="h3">Impediments</h3>
+        <div class="row tight"><input class="input" id="impText" placeholder="Describe a blocker…" style="flex:1"/><button class="btn" id="impAdd">Add</button></div>
+        <div id="impList" style="margin-top:8px"></div>
+      </div>
+    </div>
+  `;
+  $('#btnDaily').onclick = addDailyEntry;
+  $('#btnTimer').onclick = startDailyTimer;
+  $('#impAdd').onclick = () => {
+    const t = $('#impText').value.trim(); if(!t) return;
+    State.data.impediments.push({id:uid('im'),text:t,owner:State.user.name,status:'Open',createdAt:now()});
+    $('#impText').value='';
+    Store.save(); drawImpediments();
+  };
+  drawDaily(); drawImpediments();
+}
+function addDailyEntry() {
+  const today = new Date().toISOString().slice(0,10);
+  const existing = State.data.dailyScrum.find(d => d.userId===State.user.id && d.date===today);
+  const y = prompt('Yesterday I…', existing?.yesterday||'') ?? '';
+  const t = prompt('Today I will…', existing?.today||'') ?? '';
+  const b = prompt('Blockers (optional)', existing?.blockers||'') ?? '';
+  if (existing) Object.assign(existing,{yesterday:y,today:t,blockers:b,createdAt:now()});
+  else State.data.dailyScrum.push({id:uid('d'),userId:State.user.id,name:State.user.name,date:today,yesterday:y,today:t,blockers:b,createdAt:now()});
+  Store.save(); drawDaily();
+}
+function drawDaily(){
+  const today = new Date().toISOString().slice(0,10);
+  const items = State.data.dailyScrum.filter(d=>d.date===today);
+  $('#dailyList').innerHTML = items.length ? items.map(d => `
+    <div class="card hover" style="margin-bottom:8px">
+      <div class="row" style="align-items:center"><div class="avatar lg" style="background:${colorFor(d.name)}">${escape(d.name[0].toUpperCase())}</div>
+        <div><b>${escape(d.name)}</b><div class="muted tiny">${d.date}</div></div></div>
+      <div class="divider"></div>
+      <div><b>Yesterday:</b> ${escape(d.yesterday||'—')}</div>
+      <div><b>Today:</b> ${escape(d.today||'—')}</div>
+      <div><b>Blockers:</b> <span class="${d.blockers?'':''}">${escape(d.blockers||'None')}</span></div>
+    </div>
+  `).join('') : `<div class="muted">No updates yet today. Click "+ My update".</div>`;
+}
+function drawImpediments(){
+  $('#impList').innerHTML = State.data.impediments.map(i => `
+    <div class="card" style="margin-bottom:6px;padding:8px 10px">
+      <div class="row" style="align-items:center;gap:6px">
+        <span class="chip ${i.status==='Open'?'r':'g'}">${i.status}</span>
+        <span style="flex:1">${escape(i.text)}</span>
+        <button class="btn sm" data-imp="${i.id}">${i.status==='Open'?'Resolve':'Reopen'}</button>
+        <button class="btn sm ghost" data-imp-del="${i.id}">✕</button>
+      </div>
+      <div class="tiny muted">${escape(i.owner)} · ${fmtTime(i.createdAt)}</div>
+    </div>
+  `).join('') || '<div class="muted tiny">No impediments. Great!</div>';
+  $$('#impList [data-imp]').forEach(b => b.onclick = () => {
+    const i = State.data.impediments.find(x=>x.id===b.dataset.imp); if(i){ i.status=i.status==='Open'?'Resolved':'Open'; Store.save(); drawImpediments();}
+  });
+  $$('#impList [data-imp-del]').forEach(b => b.onclick = () => {
+    State.data.impediments = State.data.impediments.filter(x=>x.id!==b.dataset.impDel); Store.save(); drawImpediments();
+  });
+}
+let dailyTimerHandle=null;
+function startDailyTimer(){
+  if (dailyTimerHandle) { clearInterval(dailyTimerHandle); dailyTimerHandle=null; $('#btnTimer').textContent='Start timer'; return; }
+  let secs = 15*60; const el = $('#dailyTimer');
+  el.textContent = formatSecs(secs);
+  $('#btnTimer').textContent='Stop timer';
+  dailyTimerHandle = setInterval(() => {
+    secs--; el.textContent = formatSecs(Math.max(0,secs));
+    if (secs<=0) { clearInterval(dailyTimerHandle); dailyTimerHandle=null; $('#btnTimer').textContent='Start timer'; toast("Daily Scrum time's up!", 'ok'); }
+  }, 1000);
+}
+function formatSecs(s){ const m=Math.floor(s/60); return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+/* =========================================================================
+   7. Sprint Execution Dashboard
+   ========================================================================= */
+function renderExecution(host) {
+  const sp = State.data.sprints.find(x=>x.id===State.data.activeSprintId);
+  host.innerHTML = `
+    <h1 class="h1">📈 Sprint Execution</h1>
+    ${!sp?'<div class="card muted">No active sprint.</div>':`
+      <div class="kpi-grid">
+        ${sprintKPIs(sp).map(k=>`<div class="kpi"><div class="l">${k.l}</div><div class="v">${k.v}</div></div>`).join('')}
+      </div>
+      <div class="charts-grid">
+        <div class="card"><h3 class="h3">Burndown</h3><canvas class="chart" id="chBurn"></canvas></div>
+        <div class="card"><h3 class="h3">Sprint health</h3><canvas class="chart" id="chHealth"></canvas></div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <h3 class="h3">Stories in this sprint</h3>
+        <ul style="margin:0;padding-left:18px">
+          ${State.data.backlog.filter(s=>s.sprintId===sp.id).map(s=>`<li>${escape(s.title)} — <span class="chip ${statusClass(s.status)}">${s.status}</span> (${s.points||'?'} pts)</li>`).join('') || '<li class="muted">No stories.</li>'}
+        </ul>
+      </div>
+    `}
+  `;
+  if (sp) {
+    drawBurndown($('#chBurn'), sp);
+    drawDonut($('#chHealth'), sprintHealth(sp), 100);
+  }
+}
+function sprintKPIs(sp){
+  const stories = State.data.backlog.filter(s=>s.sprintId===sp.id);
+  const total = stories.reduce((a,s)=>a+(parseInt(s.points)||0),0);
+  const done  = stories.filter(s=>s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0);
+  const blocked = stories.filter(s=>s.status==='Blocked').length;
+  return [
+    {l:'Committed pts', v: total},
+    {l:'Completed pts', v: done},
+    {l:'Remaining pts', v: total-done},
+    {l:'Blocked stories', v: blocked},
+    {l:'Stories', v: stories.length},
+    {l:'Capacity', v: sp.capacity||'-'},
+  ];
+}
+function sprintHealth(sp){
+  const stories = State.data.backlog.filter(s=>s.sprintId===sp.id);
+  if (!stories.length) return 50;
+  const total = stories.reduce((a,s)=>a+(parseInt(s.points)||0),0)||1;
+  const done = stories.filter(s=>s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0);
+  const elapsed = sp.start && sp.end ? Math.min(1, Math.max(0, (now()-sp.start)/(sp.end-sp.start))) : 0.5;
+  const expected = total*elapsed;
+  const ratio = done/Math.max(1,expected);
+  return Math.round(Math.min(100, ratio*100));
+}
+
+/* =========================================================================
+   8. Sprint Review
+   ========================================================================= */
+function renderReview(host) {
+  const sp = State.data.sprints.find(x=>x.id===State.data.activeSprintId);
+  host.innerHTML = `
+    <h1 class="h1">🎬 Sprint Review</h1>
+    ${!sp?'<div class="card muted">No active sprint.</div>':`
+      <div class="card">
+        <h2 class="h2">${escape(sp.name)} — Demo</h2>
+        <p class="muted">${escape(sp.goal||'')}</p>
+        <label class="label">Demo notes / stakeholder feedback</label>
+        <textarea class="textarea" id="revNotes">${escape(sp.reviewNotes||'')}</textarea>
+        <div class="divider"></div>
+        <h3 class="h3">Demo checklist</h3>
+        <div class="row tight"><input class="input" id="dcText" placeholder="Add checklist item…" style="flex:1"/><button class="btn" id="dcAdd">Add</button></div>
+        <ul style="margin-top:8px;padding-left:0;list-style:none" id="dcList"></ul>
+        <div class="divider"></div>
+        <h3 class="h3">Completed stories</h3>
+        <div id="revStories"></div>
+      </div>
+    `}
+  `;
+  if (!sp) return;
+  $('#revNotes').addEventListener('input', e => { sp.reviewNotes = e.target.value; Store.save(); });
+  $('#dcAdd').onclick = () => {
+    const t = $('#dcText').value.trim(); if(!t) return;
+    sp.demoChecklist = sp.demoChecklist || [];
+    sp.demoChecklist.push({id:uid('dc'),text:t,done:false});
+    $('#dcText').value=''; Store.save(); drawDemo();
+  };
+  drawDemo();
+  function drawDemo(){
+    const list = sp.demoChecklist || [];
+    $('#dcList').innerHTML = list.map(it => `<li><label><input type="checkbox" ${it.done?'checked':''} data-dc="${it.id}"/> ${escape(it.text)}</label></li>`).join('') || '<li class="muted tiny">No items.</li>';
+    $$('#dcList [data-dc]').forEach(c => c.onchange = e => { const it = sp.demoChecklist.find(x=>x.id===c.dataset.dc); if(it){it.done=c.checked; Store.save();} });
+    const done = State.data.backlog.filter(s=>s.sprintId===sp.id && s.status==='Done');
+    $('#revStories').innerHTML = done.length ? done.map(s=>`
+      <div class="card hover" style="margin-bottom:8px">
+        <b>${escape(s.title)}</b> · ${s.points||'?'} pts <span class="chip g">Done</span>
+        <div class="muted tiny">${escape(s.desc||'')}</div>
+        <div class="row tight" style="margin-top:6px">
+          <button class="btn sm" data-app="${s.id}">✓ Approve</button>
+          <button class="btn sm" data-rej="${s.id}">↺ Request changes</button>
+          <button class="btn sm ghost" data-vote="${s.id}">👍 ${s.votes||0}</button>
+        </div>
+      </div>
+    `).join('') : '<div class="muted">No completed stories yet.</div>';
+    $$('#revStories [data-app]').forEach(b => b.onclick=()=>{ const s=State.data.backlog.find(x=>x.id===b.dataset.app); s.approved=true; Store.save(); toast('Approved','ok'); });
+    $$('#revStories [data-rej]').forEach(b => b.onclick=()=>{ const s=State.data.backlog.find(x=>x.id===b.dataset.rej); s.status='In Progress'; Store.save(); renderActiveModule(); });
+    $$('#revStories [data-vote]').forEach(b => b.onclick=()=>{ const s=State.data.backlog.find(x=>x.id===b.dataset.vote); s.votes=(s.votes||0)+1; Store.save(); renderActiveModule(); });
+  }
+}
+
+/* =========================================================================
+   9. Retrospective
+   ========================================================================= */
+const RETRO_FORMATS = {
+  'classic': {label:'What went well / Did not go well / Improve / Actions', cols:['What went well','What did not go well','What can be improved','Action items']},
+  'ssc':     {label:'Start / Stop / Continue', cols:['Start','Stop','Continue']},
+  'msg':     {label:'Mad / Sad / Glad', cols:['Mad','Sad','Glad']},
+  '4ls':     {label:'4Ls — Liked / Learned / Lacked / Longed For', cols:['Liked','Learned','Lacked','Longed For']}
+};
+function renderRetro(host) {
+  if (!State.data.retrospectives.length) addRetro();
+  let active = State.data.retrospectives[State.data.retrospectives.length-1];
+  host.innerHTML = `
+    <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px">
+      <h1 class="h1">🔁 Retrospective</h1>
+      <select class="select" id="retroPick" style="max-width:240px"></select>
+      <select class="select" id="retroFmt" style="max-width:240px">${Object.entries(RETRO_FORMATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select>
+      <label class="chip"><input type="checkbox" id="retroAnon"> Anonymous</label>
+      <div class="spacer"></div>
+      <button class="btn" id="btnNewRetro">+ New retro</button>
+    </div>
+    <div id="retroBody" style="margin-top:12px"></div>
+  `;
+  function refreshPicker(){
+    $('#retroPick').innerHTML = State.data.retrospectives.map((r,i)=>`<option value="${r.id}">Retro #${i+1} · ${fmtDate(r.createdAt)}</option>`).join('');
+    $('#retroPick').value = active.id;
+  }
+  refreshPicker();
+  $('#retroFmt').value = active.format || 'classic';
+  $('#retroAnon').checked = !!active.anonymous;
+  $('#retroPick').onchange = e => { active = State.data.retrospectives.find(r=>r.id===e.target.value); drawRetro(); };
+  $('#retroFmt').onchange = e => { active.format = e.target.value; Store.save(); drawRetro(); };
+  $('#retroAnon').onchange = e => { active.anonymous = e.target.checked; Store.save(); };
+  $('#btnNewRetro').onclick = () => { addRetro(); active = State.data.retrospectives.at(-1); refreshPicker(); drawRetro(); };
+  drawRetro();
+  function drawRetro(){
+    const fmt = RETRO_FORMATS[active.format||'classic'];
+    active.sections = active.sections || {};
+    fmt.cols.forEach(c => active.sections[c] = active.sections[c] || []);
+    const cols = fmt.cols.map(c => `
+      <div class="col-lane" style="min-height:180px"><h4>${c} <span class="count">${active.sections[c].length}</span></h4>
+        <div class="row tight"><input class="input" placeholder="Add note…" data-add="${c}" style="flex:1"/><button class="btn sm" data-addb="${c}">+</button></div>
+        ${active.sections[c].map(n=>`
+          <div class="task">
+            ${escape(n.text)}
+            <div class="meta">
+              <span class="muted tiny">${active.anonymous?'Anonymous':escape(n.author||'-')}</span>
+              <button class="btn sm ghost" data-up="${c}|${n.id}">👍 ${n.votes||0}</button>
+              <button class="btn sm ghost" data-rm="${c}|${n.id}">✕</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+    $('#retroBody').innerHTML = `
+      <div class="board cols-${fmt.cols.length}">${cols}</div>
+      <div class="card" style="margin-top:12px">
+        <h3 class="h3">Action items</h3>
+        <div class="row tight"><input class="input" id="actText" placeholder="Action…" style="flex:1"/><input class="input" id="actOwner" placeholder="Owner" style="max-width:160px"/><button class="btn" id="actAdd">Add</button></div>
+        <ul style="margin-top:8px;padding-left:0;list-style:none">
+          ${(active.actions||[]).map(a=>`<li><label><input type="checkbox" ${a.done?'checked':''} data-act="${a.id}"/> ${escape(a.text)} — <span class="muted tiny">${escape(a.owner||'')}</span></label></li>`).join('') || '<li class="muted tiny">No actions yet.</li>'}
+        </ul>
+      </div>
+    `;
+    $$('#retroBody [data-addb]').forEach(b => b.onclick = () => {
+      const c=b.dataset.addb; const inp = document.querySelector(`[data-add="${c}"]`);
+      const t=inp.value.trim(); if(!t)return;
+      active.sections[c].push({id:uid('rn'),text:t,votes:0,author:State.user.name,at:now()});
+      Store.save(); drawRetro();
+    });
+    $$('#retroBody [data-up]').forEach(b => b.onclick = () => {
+      const [c,id] = b.dataset.up.split('|');
+      const n=active.sections[c].find(x=>x.id===id); if(n){n.votes=(n.votes||0)+1;Store.save();drawRetro();}
+    });
+    $$('#retroBody [data-rm]').forEach(b => b.onclick = () => {
+      const [c,id] = b.dataset.rm.split('|');
+      active.sections[c] = active.sections[c].filter(x=>x.id!==id); Store.save(); drawRetro();
+    });
+    $('#actAdd').onclick = () => {
+      const t=$('#actText').value.trim(); if(!t) return;
+      active.actions = active.actions || [];
+      active.actions.push({id:uid('ac'),text:t,owner:$('#actOwner').value,done:false,at:now()});
+      $('#actText').value=''; $('#actOwner').value='';
+      Store.save(); drawRetro();
+    };
+    $$('#retroBody [data-act]').forEach(c => c.onchange = () => {
+      const a = active.actions.find(x=>x.id===c.dataset.act); if(a){a.done=c.checked; Store.save();}
+    });
+  }
+}
+function addRetro(){
+  State.data.retrospectives.push({
+    id:uid('re'), sprintId:State.data.activeSprintId, format:'classic',
+    sections:{}, actions:[], anonymous:false, createdAt:now()
+  });
+  Store.save();
+}
+function addRetroNote(){
+  if (!State.data.retrospectives.length) addRetro();
+  switchModule('retro');
+}
+
+/* =========================================================================
+   10. Agile Metrics
+   ========================================================================= */
+function renderMetrics(host) {
+  host.innerHTML = `
+    <h1 class="h1">📊 Agile Metrics</h1>
+    <div class="kpi-grid" id="kpiAll"></div>
+    <div class="charts-grid">
+      <div class="card"><h3 class="h3">Velocity (per sprint)</h3><canvas class="chart" id="chVel"></canvas></div>
+      <div class="card"><h3 class="h3">Burnup (cumulative)</h3><canvas class="chart" id="chBurnup"></canvas></div>
+      <div class="card"><h3 class="h3">Lead / Cycle time (days)</h3><canvas class="chart" id="chLead"></canvas></div>
+      <div class="card"><h3 class="h3">Team happiness</h3><canvas class="chart" id="chHappy"></canvas></div>
+    </div>
+  `;
+  const sprints = State.data.sprints;
+  const velocities = sprints.map(sp => State.data.backlog.filter(s=>s.sprintId===sp.id && s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0));
+  const totalDone = velocities.reduce((a,b)=>a+b,0);
+  const avgVel = velocities.length ? Math.round(totalDone/velocities.length) : 0;
+  const lead = avgLeadTime();
+  const cycle = Math.round(lead*0.7);
+  const predictability = computePredictability();
+  const happy = computeHappiness();
+  const kpis = [
+    {l:'Avg velocity', v: avgVel},
+    {l:'Total points done', v: totalDone},
+    {l:'Sprints', v: sprints.length},
+    {l:'Predictability', v: predictability+'%'},
+    {l:'Lead time (d)', v: lead},
+    {l:'Cycle time (d)', v: cycle},
+    {l:'Stories done', v: State.data.backlog.filter(s=>s.status==='Done').length},
+    {l:'Open impediments', v: State.data.impediments.filter(i=>i.status==='Open').length},
+    {l:'Happiness', v: happy+'/10'},
+  ];
+  $('#kpiAll').innerHTML = kpis.map(k=>`<div class="kpi"><div class="l">${k.l}</div><div class="v">${k.v}</div></div>`).join('');
+  drawBarChart($('#chVel'), velocities, sprints.map(s=>s.name));
+  drawBurnup($('#chBurnup'));
+  drawLineChart($('#chLead'), [lead, cycle, lead-cycle], ['Lead','Cycle','Wait']);
+  drawDonut($('#chHappy'), happy*10, 100);
+}
+function avgLeadTime(){
+  const done = State.data.backlog.filter(s=>s.status==='Done' && s.createdAt);
+  if (!done.length) return 0;
+  return Math.round(done.reduce((a,s)=>a + ((s.completedAt||now())-s.createdAt)/86400000, 0)/done.length);
+}
+function computePredictability(){
+  const sps = State.data.sprints;
+  if (!sps.length) return 0;
+  const ratios = sps.map(sp => {
+    const stories = State.data.backlog.filter(s=>s.sprintId===sp.id);
+    const total = stories.reduce((a,s)=>a+(parseInt(s.points)||0),0)||1;
+    const done = stories.filter(s=>s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0);
+    return done/total;
+  });
+  return Math.round(100*ratios.reduce((a,b)=>a+b,0)/ratios.length);
+}
+function computeHappiness(){
+  const retros = State.data.retrospectives;
+  if (!retros.length) return 7;
+  const last = retros.at(-1);
+  const pos = (last.sections?.['What went well']?.length||0) + (last.sections?.['Glad']?.length||0) + (last.sections?.['Liked']?.length||0) + (last.sections?.['Continue']?.length||0);
+  const neg = (last.sections?.['What did not go well']?.length||0) + (last.sections?.['Mad']?.length||0) + (last.sections?.['Sad']?.length||0) + (last.sections?.['Lacked']?.length||0) + (last.sections?.['Stop']?.length||0);
+  const total = pos+neg||1;
+  return Math.round((pos/total)*10);
+}
+
+/* =========================================================================
+   11. Transformation Roadmap
+   ========================================================================= */
+function renderTransformation(host) {
+  host.innerHTML = `<h1 class="h1">🚀 Agile Transformation</h1>
+    <div id="transBody"></div>
+  `;
+  drawTrans();
+}
+function drawTrans(){
+  $('#transBody').innerHTML = State.data.transformation.map((s,i)=>`
+    <div class="stage">
+      <div class="num">${i+1}</div>
+      <div>
+        <b>${escape(s.name)}</b>
+        <div class="muted tiny">Owner: ${escape(s.owner||'-')} · Milestones: ${escape(s.milestones||'-')} · Risks: ${escape(s.risks||'-')}</div>
+        <div class="row tight" style="margin-top:6px">${(s.initiatives||[]).map(it=>`<span class="chip">${escape(it)}</span>`).join('')||'<span class="muted tiny">No initiatives yet</span>'}</div>
+      </div>
+      <div class="col" style="gap:6px;align-items:flex-end">
+        <select class="select" data-st="${s.id}" style="max-width:160px">
+          ${['Not started','In Progress','Blocked','Done'].map(o=>`<option ${o===s.status?'selected':''}>${o}</option>`).join('')}
+        </select>
+        <button class="btn sm" data-stEdit="${s.id}">Edit</button>
+      </div>
+    </div>
+  `).join('');
+  $$('[data-st]').forEach(sel => sel.onchange = e => { const st = State.data.transformation.find(x=>x.id===sel.dataset.st); st.status=e.target.value; Store.save(); });
+  $$('[data-stEdit]').forEach(b => b.onclick = () => {
+    const st = State.data.transformation.find(x=>x.id===b.dataset.stEdit); if(!st) return;
+    const o = prompt('Owner', st.owner||'') ?? st.owner;
+    const m = prompt('Milestones', st.milestones||'') ?? st.milestones;
+    const r = prompt('Risks / dependencies', st.risks||'') ?? st.risks;
+    const init = prompt('Initiatives (comma separated)', (st.initiatives||[]).join(', ')) ?? '';
+    st.owner=o; st.milestones=m; st.risks=r; st.initiatives = init.split(',').map(x=>x.trim()).filter(Boolean);
+    Store.save(); drawTrans();
+  });
+}
+
+/* =========================================================================
+   Charts (canvas, no library)
+   ========================================================================= */
+function setupCanvas(canvas){
+  if (!canvas) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  return {ctx,w,h};
+}
+function chartColors(){
+  const css = getComputedStyle(document.body);
+  return {
+    fg: css.getPropertyValue('--fg').trim()||'#222',
+    mute: css.getPropertyValue('--fg-mute').trim()||'#888',
+    border: css.getPropertyValue('--border').trim()||'#ddd',
+    brand: css.getPropertyValue('--brand').trim()||'#5b6cff',
+    accent: css.getPropertyValue('--accent').trim()||'#16c79a',
+    danger: css.getPropertyValue('--danger').trim()||'#ef4f5e'
+  };
+}
+function drawBarChart(canvas, values, labels){
+  const s = setupCanvas(canvas); if(!s) return; const {ctx,w,h} = s; const c = chartColors();
+  ctx.clearRect(0,0,w,h);
+  const pad = {l:34,r:10,t:10,b:30};
+  const max = Math.max(1, ...values);
+  const bw = (w-pad.l-pad.r)/Math.max(1,values.length);
+  ctx.strokeStyle=c.border; ctx.beginPath(); ctx.moveTo(pad.l,h-pad.b); ctx.lineTo(w-pad.r,h-pad.b); ctx.stroke();
+  ctx.fillStyle=c.mute; ctx.font='11px sans-serif';
+  values.forEach((v,i)=>{
+    const x = pad.l + i*bw + 6;
+    const bh = (h-pad.t-pad.b)*(v/max);
+    const grad = ctx.createLinearGradient(0,h-pad.b-bh,0,h-pad.b);
+    grad.addColorStop(0,c.brand); grad.addColorStop(1,c.accent);
+    ctx.fillStyle=grad;
+    ctx.fillRect(x, h-pad.b-bh, bw-12, bh);
+    ctx.fillStyle=c.fg; ctx.textAlign='center'; ctx.fillText(v, x+(bw-12)/2, h-pad.b-bh-4);
+    ctx.fillStyle=c.mute; ctx.fillText((labels?.[i]||'').slice(0,8), x+(bw-12)/2, h-8);
+  });
+}
+function drawLineChart(canvas, values, labels){
+  const s = setupCanvas(canvas); if(!s) return; const {ctx,w,h} = s; const c = chartColors();
+  ctx.clearRect(0,0,w,h);
+  const pad = {l:34,r:10,t:10,b:30};
+  const max = Math.max(1, ...values);
+  ctx.strokeStyle=c.border; ctx.beginPath(); ctx.moveTo(pad.l,h-pad.b); ctx.lineTo(w-pad.r,h-pad.b); ctx.stroke();
+  ctx.beginPath(); ctx.lineWidth=2.5; ctx.strokeStyle=c.brand;
+  values.forEach((v,i)=>{
+    const x = pad.l + i*((w-pad.l-pad.r)/Math.max(1,values.length-1));
+    const y = h-pad.b - (h-pad.t-pad.b)*(v/max);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle=c.fg; ctx.font='11px sans-serif';
+  values.forEach((v,i)=>{
+    const x = pad.l + i*((w-pad.l-pad.r)/Math.max(1,values.length-1));
+    const y = h-pad.b - (h-pad.t-pad.b)*(v/max);
+    ctx.fillStyle=c.brand; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=c.mute; ctx.textAlign='center'; ctx.fillText(labels?.[i]||'', x, h-8);
+  });
+}
+function drawDonut(canvas, value, max){
+  const s = setupCanvas(canvas); if(!s) return; const {ctx,w,h} = s; const c = chartColors();
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, r = Math.min(w,h)/2 - 14;
+  const pct = Math.max(0,Math.min(1,value/max));
+  ctx.lineWidth=18; ctx.strokeStyle=c.border;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.strokeStyle = pct>0.7?c.accent:(pct>0.4?c.brand:c.danger);
+  ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+pct*Math.PI*2); ctx.stroke();
+  ctx.fillStyle=c.fg; ctx.font='bold 22px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(Math.round(pct*100)+'%', cx, cy);
+}
+function drawBurndown(canvas, sp){
+  const s = setupCanvas(canvas); if(!s) return; const {ctx,w,h}=s; const c=chartColors();
+  ctx.clearRect(0,0,w,h);
+  const stories = State.data.backlog.filter(x=>x.sprintId===sp.id);
+  const total = stories.reduce((a,x)=>a+(parseInt(x.points)||0),0)||1;
+  const days = Math.max(1, Math.round(((sp.end||now())-(sp.start||now()))/86400000));
+  const idealPts = []; for (let i=0;i<=days;i++) idealPts.push(total*(1-i/days));
+  // remaining over days based on completed dates (fallback: linear with current ratio)
+  const done = stories.filter(x=>x.status==='Done').reduce((a,x)=>a+(parseInt(x.points)||0),0);
+  const today = Math.min(days, Math.max(0, Math.round((now()-(sp.start||now()))/86400000)));
+  const actualPts = []; for(let i=0;i<=days;i++){
+    if (i<=today) actualPts.push(total - (done * (i/Math.max(1,today))));
+    else actualPts.push(null);
+  }
+  const pad={l:34,r:10,t:10,b:24}; const max=total;
+  ctx.strokeStyle=c.border; ctx.beginPath(); ctx.moveTo(pad.l,h-pad.b); ctx.lineTo(w-pad.r,h-pad.b); ctx.stroke();
+  // ideal (dashed)
+  ctx.setLineDash([4,4]); ctx.strokeStyle=c.mute; ctx.lineWidth=1.5; ctx.beginPath();
+  idealPts.forEach((v,i)=>{ const x=pad.l+i*((w-pad.l-pad.r)/days); const y=h-pad.b-(h-pad.t-pad.b)*(v/max); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke(); ctx.setLineDash([]);
+  // actual
+  ctx.strokeStyle=c.brand; ctx.lineWidth=2.5; ctx.beginPath();
+  actualPts.forEach((v,i)=>{ if(v==null)return; const x=pad.l+i*((w-pad.l-pad.r)/days); const y=h-pad.b-(h-pad.t-pad.b)*(v/max); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke();
+  ctx.fillStyle=c.mute; ctx.font='11px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Day 0', pad.l, h-6); ctx.textAlign='right'; ctx.fillText('Day '+days, w-pad.r, h-6);
+}
+function drawBurnup(canvas){
+  const s = setupCanvas(canvas); if(!s) return; const {ctx,w,h}=s; const c=chartColors();
+  ctx.clearRect(0,0,w,h);
+  const sps = State.data.sprints;
+  if (!sps.length) { ctx.fillStyle=c.mute; ctx.fillText('No data',20,30); return; }
+  let cum=0; const cumPts=sps.map(sp => {
+    cum += State.data.backlog.filter(x=>x.sprintId===sp.id && x.status==='Done').reduce((a,x)=>a+(parseInt(x.points)||0),0); return cum;
+  });
+  const totalScope = State.data.backlog.reduce((a,x)=>a+(parseInt(x.points)||0),0)||1;
+  const max = Math.max(totalScope, ...cumPts, 1);
+  const pad={l:34,r:10,t:10,b:24};
+  // scope line
+  ctx.strokeStyle=c.danger; ctx.setLineDash([4,4]); ctx.beginPath();
+  ctx.moveTo(pad.l, h-pad.b-(h-pad.t-pad.b)*(totalScope/max));
+  ctx.lineTo(w-pad.r, h-pad.b-(h-pad.t-pad.b)*(totalScope/max));
+  ctx.stroke(); ctx.setLineDash([]);
+  // cum line
+  ctx.strokeStyle=c.brand; ctx.lineWidth=2.5; ctx.beginPath();
+  cumPts.forEach((v,i)=>{ const x=pad.l+i*((w-pad.l-pad.r)/Math.max(1,cumPts.length-1)); const y=h-pad.b-(h-pad.t-pad.b)*(v/max); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke();
+}
+
+/* =========================================================================
+   Share / QR
+   ========================================================================= */
+function openShare() {
+  const id = State.workspaceId;
+  const url = new URL(location.href); url.searchParams.set('workspace', id);
+  $('#shareId').value = id;
+  $('#shareUrl').value = url.toString();
+  const qrEl = $('#qr'); qrEl.innerHTML = '';
+  try { new QRCode(qrEl, { text: url.toString(), width:180, height:180, correctLevel: QRCode.CorrectLevel.M }); } catch(e){ qrEl.textContent='QR unavailable'; }
+  $('#modalShare').classList.add('show');
+}
+
+/* =========================================================================
+   Export
+   ========================================================================= */
+function download(name, content, mime='text/plain') {
+  const blob = new Blob([content], {type:mime});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+function exportJSON() {
+  download(`scrum-${State.workspaceId}.json`, JSON.stringify(State.data,null,2), 'application/json');
+}
+function exportCSV() {
+  const rows = [['type','id','title','status','priority','points','sprint','assignee','votes']];
+  State.data.backlog.forEach(s => {
+    const sp = State.data.sprints.find(x=>x.id===s.sprintId)?.name || '';
+    rows.push(['story', s.id, s.title, s.status, s.priority, s.points, sp, s.assignee, s.votes||0]);
+  });
+  rows.push([]); rows.push(['sprint','id','name','goal','start','end','capacity','velocity']);
+  State.data.sprints.forEach(sp => {
+    const v = State.data.backlog.filter(s=>s.sprintId===sp.id && s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0);
+    rows.push(['sprint', sp.id, sp.name, sp.goal, sp.start? new Date(sp.start).toISOString():'', sp.end? new Date(sp.end).toISOString():'', sp.capacity, v]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  download(`scrum-${State.workspaceId}.csv`, csv, 'text/csv');
+}
+function exportReport() {
+  const v = State.data.vision;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Scrum Report — ${State.workspaceId}</title>
+    <style>body{font:14px/1.5 system-ui;padding:32px;max-width:900px;margin:auto;color:#222}
+    h1,h2,h3{margin-top:24px} .pill{display:inline-block;padding:2px 8px;background:#eef;border-radius:99px;font-size:12px;margin-right:4px}
+    table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ddd;padding:6px;text-align:left;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}</style>
+    </head><body>
+    <h1>Scrum Workspace Report</h1>
+    <p><b>ID:</b> ${escape(State.workspaceId)} · <b>Generated:</b> ${new Date().toLocaleString()}</p>
+    <h2>Vision</h2>
+    <div class="grid">
+      <div><b>Statement:</b><p>${escape(v.statement)}</p></div>
+      <div><b>Value:</b><p>${escape(v.value)}</p></div>
+      <div><b>Goals:</b><p>${escape(v.goals)}</p></div>
+      <div><b>Personas:</b><p>${escape(v.personas)}</p></div>
+      <div><b>Metrics:</b><p>${escape(v.metrics)}</p></div>
+      <div><b>Themes:</b><p>${escape(v.themes)}</p></div>
+    </div>
+    <h2>Sprints</h2>
+    <table><tr><th>Sprint</th><th>Goal</th><th>Dates</th><th>Capacity</th><th>Velocity</th></tr>
+    ${State.data.sprints.map(sp=>{
+      const v = State.data.backlog.filter(s=>s.sprintId===sp.id && s.status==='Done').reduce((a,s)=>a+(parseInt(s.points)||0),0);
+      return `<tr><td>${escape(sp.name)}</td><td>${escape(sp.goal||'')}</td><td>${sp.start?fmtDate(sp.start):''}–${sp.end?fmtDate(sp.end):''}</td><td>${sp.capacity||'-'}</td><td>${v}</td></tr>`;
+    }).join('')}
+    </table>
+    <h2>Stories</h2>
+    <table><tr><th>Title</th><th>Priority</th><th>Pts</th><th>Status</th><th>Sprint</th><th>Assignee</th></tr>
+    ${State.data.backlog.map(s=>`<tr><td>${escape(s.title)}</td><td>${s.priority}</td><td>${s.points||'-'}</td><td>${s.status}</td><td>${escape(State.data.sprints.find(x=>x.id===s.sprintId)?.name||'')}</td><td>${escape(s.assignee||'')}</td></tr>`).join('')}
+    </table>
+    <h2>Retrospectives</h2>
+    ${State.data.retrospectives.map((r,i)=>`<h3>Retro #${i+1} (${escape(r.format||'classic')})</h3>${
+      Object.entries(r.sections||{}).map(([k,v])=>`<b>${escape(k)}:</b><ul>${v.map(n=>`<li>${escape(n.text)} <span class="pill">👍 ${n.votes||0}</span></li>`).join('')}</ul>`).join('')
+    }<b>Action items:</b><ul>${(r.actions||[]).map(a=>`<li>${a.done?'✓':'☐'} ${escape(a.text)} — ${escape(a.owner||'')}</li>`).join('')}</ul>`).join('')}
+    <h2>Transformation Roadmap</h2>
+    <ol>${State.data.transformation.map(s=>`<li><b>${escape(s.name)}</b> — ${escape(s.status)} ${s.owner?'· '+escape(s.owner):''}</li>`).join('')}</ol>
+    <p style="margin-top:32px;color:#888">Generated by Scrum Agile Transformation Studio</p>
+    <script>setTimeout(()=>window.print(),300)<\/script>
+    </body></html>`;
+  const w = window.open('', '_blank');
+  w.document.open(); w.document.write(html); w.document.close();
+}
+
+</script>
+</body>
+</html>
